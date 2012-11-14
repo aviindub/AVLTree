@@ -61,12 +61,12 @@ void BST<T>::insert(T v) {
             if (childBalance == 1) {
                 leftSingleRotate(critNode);
             } else if (childBalance == -1) {
-                leftRightRotate(critNode);
+                rightLeftRotate(critNode);
             }
         } else if (critBalance == -2) {
             childBalance = (*critNode)->getLeftChild->getBalance();
             if (childBalance == 1) {
-                rightLeftRotate(critNode);
+                leftRightRotate(critNode);
             } else if (childBalance == -1) {
                 rightSingleRotate(critNode);
             }
@@ -75,32 +75,69 @@ void BST<T>::insert(T v) {
 }
 
 template <typename T>
-void BST<T>::recalcBalance(Node<T>** crit) {
-
+int BST<T>::recalcBalance(Node<T>** crit) {
+    if ((*curr) == 0) {
+        return 1;
+    }
+    (*curr)->setBalance(
+        recalcBalance(&(*curr)->getLeftChild()) + 
+        (-1 * recalcBalance(&(*curr)->getRightChild()))
+    );
+    return (*curr)->getBalance();
 }
 
 template <typename T>
 void BST<T>::leftSingleRotate(Node<T>** crit) {
     //crit node +1 -> +2
     //crit node Rchild 0 -> +1
+    Node<T>* a, c;
+    a = *crit;
+    c = (*crit)->getRightChild();
+    a->setRightChild(c->getLeftChild());
+    c->setLeftChild(a);
+    *crit = c;
 }
 
 template <typename T>
 void BST<T>::rightSingleRotate(Node<T>** crit) {
     //crit node -1 -> -2
-    //crit node Lchild 0 -> -1
-}
-
-template <typename T>
-void BST<T>::leftRightRotate(Node<T>** crit) {
-    //crit node +1 -> +2
-    //crit node Rchild 0 -> -1
+    //crit node Lchild 0 -> -1 
+    Node<T>* a, c;
+    a = *crit;
+    c = (*crit)->getLeftChild();
+    a->setLeftChild(c->getRightChild());
+    c->setRightChild(a);
+    *crit = c;
 }
 
 template <typename T>
 void BST<T>::rightLeftRotate(Node<T>** crit) {
+    //crit node +1 -> +2
+    //crit node Rchild 0 -> -1
+    Node<T>* a, b, c;
+    a = *curr;
+    c = a->getRightChild();
+    b = c->getLeftChild();
+    c->setLeftChild(b->getRightChild());
+    a->setRightChild(b->getLeftChild());
+    b->setLeftChild(a);
+    b->setRightChild(c);
+    *curr = b;
+}
+
+template <typename T>
+void BST<T>::leftRightRotate(Node<T>** crit) {
     //crit node -1 -> -2
     //crit node Lchild 0 -> +1
+    Node<T>* a, b, c;
+    a = *curr;
+    c = a->getLeftChild();
+    b = c->getRightChild();
+    c->setRightChild(b->getLeftChild());
+    a->setLeftChild(b->getRightChild());
+    b->setRightChild(a);
+    b->setLeftChild(c);
+    *curr = b;
 }
 
 template <typename T>
