@@ -7,10 +7,14 @@ class Node {
   T value;
   Node<T>* leftChild;
   Node<T>* rightChild;
+  int balance;
 
  public:
   Node<T>(T v);
   T getValue();
+  
+  void setBalance(int b);
+  int getBalance();
 
   Node<T>*& getLeftChild();
   void setLeftChild(Node<T>& n);
