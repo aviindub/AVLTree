@@ -9,6 +9,12 @@ class BST {
  private:
   Node<T>* root;
   void traversalPrint(Node<T>* root);
+  void postOrderDelete(Node<T>* n);
+  void leftSingleRotate(Node<T>** crit);
+  void rightSingleRotate(Node<T>** crit);
+  void leftRightRotate(Node<T>** crit);
+  void rightLeftRotate(Node<T>** crit);
+  void recalcBalance(Node<T>** crit);
 
  public:
   BST<T>();
