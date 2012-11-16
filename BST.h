@@ -14,7 +14,7 @@ class BST {
   void rightSingleRotate(Node<T>** crit);
   void leftRightRotate(Node<T>** crit);
   void rightLeftRotate(Node<T>** crit);
-  void recalcBalance(Node<T>** crit);
+  int recalcBalance(Node<T>** crit);
 
  public:
   BST<T>();
