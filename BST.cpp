@@ -221,24 +221,32 @@ void BST<T>::remove(T v) {
     delete toDelete;
 
     /* now rebalance */
-    //pop one off to get the parent of the removed node to the top
-    path.pop();
+    //pop one off to get the parent of the removed node to the top 
+    //recalcBalance(path.top());
+    //path.pop();
     recalcBalance(path.top());
     int bal = path.top()->getBalance();
     int childBalance;
     while (bal != 1 && bal != -1 && !path.empty()) {
+    //while (!path.empty()) {
+        //recalcBalance(path.top());
+        //bal = path.top()->getBalance();
+        cout << "bal = " << bal << endl;
         if (bal == 2) {
             childBalance = balance(path.top()->getRightChild());
-            if (childBalance == 1) {
-                leftSingleRotate(&(path.top()));
-            } else if (childBalance == -1) {
+            cout << "child bal = " << childBalance << endl;
+            if (childBalance == -1) {
                 rightLeftRotate(&(path.top()));
+            //} else if (childBalance == -1) {
+            } else {
+                leftSingleRotate(&(path.top()));
             }
         } else if (bal == -2) {
             childBalance = balance(path.top()->getLeftChild());
             if (childBalance == 1) {
                 leftRightRotate(&(path.top()));
-            } else if (childBalance == -1) {
+            //} else if (childBalance == -1) {
+            } else {
                 rightSingleRotate(&(path.top()));
             }
         }
@@ -249,6 +257,7 @@ void BST<T>::remove(T v) {
             bal = path.top()->getBalance();
         }
     }
+    recalcBalance(root);
 }
 
 /*
