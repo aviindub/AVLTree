@@ -1,5 +1,7 @@
 #include "BST.h"
 #include <iostream>
+#include <stack>
+
 using namespace std;
 
 template <typename T>
@@ -188,40 +190,69 @@ void BST<T>::remove(T v) {
     rotate if needed
     recalcBalance(again)
     */
+    stack< Node<T>* > path;
     Node<T>** curr = &root;
     while (*curr != 0 && (*curr)->getValue() != v) {
-        if (v < (*curr)->getValue()) {
+        path.push(*curr);
+        if (v < (*curr)->getValue()) { 
             curr = &((*curr)->getLeftChild());
         } else {
             curr = &((*curr)->getRightChild());
         }
     }
     if (*curr == 0) { return;}
-    Node<T>* toDelete = 0;
+    Node<T>* toDelete = *curr;
     if ((*curr)->getRightChild() == 0) {
-        toDelete = *curr;
         *curr = (*curr)->getLeftChild();
     } else if ((*curr)->getLeftChild() == 0) {
-        toDelete = *curr;
         *curr = (*curr)->getRightChild();
     } else {
         Node<T>** successor = &((*curr)->getRightChild());
+        path.push(*successor);
         while ((*successor)->getLeftChild() != 0) {
             successor = &((*successor)->getLeftChild());
+            path.push(*successor);
         }
-        toDelete = *curr;
         *curr = *successor;
         *successor = (*successor)->getRightChild();
         (*curr)->setRightChild(*(toDelete->getRightChild()));
         (*curr)->setLeftChild(*(toDelete->getLeftChild()));
     }
-    if (toDelete != 0) {
-        delete toDelete;
+    delete toDelete;
+
+    /* now rebalance */
+    //pop one off to get the parent of the removed node to the top
+    path.pop();
+    recalcBalance(path.top());
+    int bal = path.top()->getBalance();
+    int childBalance;
+    while (bal != 1 && bal != -1 && !path.empty()) {
+        if (bal == 2) {
+            childBalance = balance(path.top()->getRightChild());
+            if (childBalance == 1) {
+                leftSingleRotate(&(path.top()));
+            } else if (childBalance == -1) {
+                rightLeftRotate(&(path.top()));
+            }
+        } else if (bal == -2) {
+            childBalance = balance(path.top()->getLeftChild());
+            if (childBalance == 1) {
+                leftRightRotate(&(path.top()));
+            } else if (childBalance == -1) {
+                rightSingleRotate(&(path.top()));
+            }
+        }
+        recalcBalance(path.top());
+        path.pop();
+        if (!path.empty()) {
+            recalcBalance(path.top());
+            bal = path.top()->getBalance();
+        }
     }
 }
 
 /*
-template <typename T>
+template <typename T>1
 void BST<T>::printTree() {
 }
 */
