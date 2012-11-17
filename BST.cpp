@@ -212,8 +212,8 @@ void BST<T>::remove(T v) {
         toDelete = *curr;
         *curr = *successor;
         *successor = (*successor)->getRightChild();
-        (*curr)->setRightChild(*((*curr)->getRightChild()));
-        (*curr)->setLeftChild(*((*curr)->getLeftChild())); 
+        (*curr)->setRightChild(*(toDelete->getRightChild()));
+        (*curr)->setLeftChild(*(toDelete->getLeftChild()));
     }
     if (toDelete != 0) {
         delete toDelete;
