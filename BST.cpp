@@ -52,43 +52,85 @@ void BST<T>::insert(T v) {
     }
     *curr = temp;
     //cout << "passed insert, going to balance" << endl;
-    critBalance = recalcBalance(critNode);
     if (critNode != 0) {
+        critBalance = balance(*critNode); 
+        //cout << "passed balance calc" << endl;
         if (critBalance == 2) {
-            childBalance = (*critNode)->getRightChild()->getBalance();
+            childBalance = balance((*critNode)->getRightChild());
             if (childBalance == 1) {
                 leftSingleRotate(critNode);
             } else if (childBalance == -1) {
                 rightLeftRotate(critNode);
             }
         } else if (critBalance == -2) {
-            childBalance = (*critNode)->getLeftChild()->getBalance();
+            childBalance = balance((*critNode)->getLeftChild());
             if (childBalance == 1) {
                 leftRightRotate(critNode);
             } else if (childBalance == -1) {
                 rightSingleRotate(critNode);
             }
         }
+        recalcBalance(*critNode);
+    } else {
+        recalcBalance(root);
     }
-    recalcBalance(critNode);
 }
 
 template <typename T>
-int BST<T>::recalcBalance(Node<T>** curr) {
-    if ((*curr) == 0) {
-        return 1;
+void BST<T>::recalcBalance(Node<T>* curr) {
+    //cout << "recalc balance" << endl;
+    if (curr->getLeftChild() != 0) {
+        recalcBalance(curr->getLeftChild());
     }
-    (*curr)->setBalance(
-        recalcBalance(&(*curr)->getLeftChild()) + 
-        (-1 * recalcBalance(&(*curr)->getRightChild()))
-    );
-    return (*curr)->getBalance();
+    if (curr->getRightChild() != 0) {
+        recalcBalance(curr->getRightChild());
+    }
+    curr->setBalance(balance(curr));
+}
+
+template <typename T>
+int BST<T>::leftHeight(Node<T>* curr) {
+    //cout << "left height" << endl;
+    if (curr->getLeftChild() == 0) {
+        return 0;
+    } else {
+        return 1 + height(curr->getLeftChild());
+    }
+}
+
+template <typename T>
+int BST<T>::rightHeight(Node<T>* curr) {
+    //cout << "right height" << endl;
+    if (curr->getRightChild() == 0) {
+        return 0;
+    } else {
+        return 1 + height(curr->getRightChild());
+    }
+}
+
+template <typename T>
+int BST<T>::height(Node<T>* curr) {
+    //cout << "height" << endl;
+    int lHeight = leftHeight(curr);
+    int rHeight = rightHeight(curr);
+    if (lHeight > rHeight) {
+        return lHeight;
+    } else {
+        return rHeight;
+    }
+}
+
+template <typename T>
+int BST<T>::balance(Node<T>* curr) {
+    //cout << "balance" << endl;
+    return rightHeight(curr) - leftHeight(curr);
 }
 
 template <typename T>
 void BST<T>::leftSingleRotate(Node<T>** curr) {
     //crit node +1 -> +2
     //crit node Rchild 0 -> +1
+    cout << "rotating L" << endl;
     Node<T>* a = *curr;
     Node<T>* c = (*curr)->getRightChild();
     a->setRightChild(*(c->getLeftChild()));
@@ -100,6 +142,7 @@ template <typename T>
 void BST<T>::rightSingleRotate(Node<T>** curr) {
     //crit node -1 -> -2
     //crit node Lchild 0 -> -1 
+    cout << "rotating R" << endl;
     Node<T>* a = *curr;
     Node<T>* c = (*curr)->getLeftChild();
     a->setLeftChild(*(c->getRightChild()));
@@ -111,6 +154,7 @@ template <typename T>
 void BST<T>::rightLeftRotate(Node<T>** curr) {
     //crit node +1 -> +2
     //crit node Rchild 0 -> -1
+    cout << "rotating RL" << endl;
     Node<T>* a = *curr;
     Node<T>* c = a->getRightChild();
     Node<T>* b = c->getLeftChild();
@@ -125,6 +169,7 @@ template <typename T>
 void BST<T>::leftRightRotate(Node<T>** curr) {
     //crit node -1 -> -2
     //crit node Lchild 0 -> +1
+    cout << "rotating LR" << endl;
     Node<T>* a = *curr;
     Node<T>* c = a->getLeftChild();
     Node<T>* b = c->getRightChild();
@@ -190,7 +235,8 @@ template <typename T>
 void BST<T>::traversalPrint(Node<T>* root) {
     if(root != 0) {
         traversalPrint(root->getLeftChild());
-        std::cout << root->getValue() << std::endl;
+        cout << "v: " << root->getValue() <<
+            " b: " << root->getBalance() << endl;
         traversalPrint(root->getRightChild());
     }
 }
